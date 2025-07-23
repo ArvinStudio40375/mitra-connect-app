@@ -184,79 +184,123 @@ const DashboardMitra = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted p-4">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <Card className="mb-6 shadow-[var(--shadow-card)]">
-          <CardHeader>
-            <div className="flex items-center justify-between flex-wrap gap-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-500">
+      {/* Header */}
+      <div className="bg-white px-4 py-3 flex items-center gap-3 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Store className="w-6 h-6 text-orange-500" />
+          <span className="font-bold text-gray-800">SmartCare</span>
+        </div>
+        <div className="flex-1 mx-3">
+          <div className="relative">
+            <input 
+              type="text" 
+              placeholder="Cari layanan..." 
+              className="w-full bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Balance Section */}
+      <div className="px-4 py-4">
+        <Card className="bg-white/95 backdrop-blur-sm shadow-lg">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-r from-primary to-primary-glow rounded-lg">
-                  <Store className="w-6 h-6 text-white" />
+                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <Wallet className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl">
-                    Selamat datang, {mitraData?.nama_toko}!
-                  </CardTitle>
-                  <CardDescription>
-                    Dashboard SmartCare Mitra
-                  </CardDescription>
+                  <p className="text-sm text-gray-600">Saldo Anda</p>
+                  <p className="font-bold text-lg">Rp {mitraData?.saldo?.toLocaleString('id-ID') || "0"}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="text-right">
                 {getStatusBadge(mitraData?.status || "pending")}
-                <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Saldo</p>
-                  <p className="font-semibold text-primary">
-                    Rp {mitraData?.saldo?.toLocaleString('id-ID') || "0"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
-
-        {/* Menu Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {menuItems.map((item, index) => (
-            <Card 
-              key={index} 
-              className="cursor-pointer hover:shadow-[var(--shadow-card)] transition-all duration-300 hover:scale-105"
-              onClick={() => item.path ? navigate(item.path) : item.action?.()}
-            >
-              <CardHeader className="text-center">
-                <div className={`mx-auto p-4 w-16 h-16 rounded-full bg-gradient-to-r ${item.color} flex items-center justify-center mb-3`}>
-                  <item.icon className="w-8 h-8 text-white" />
-                </div>
-                <CardTitle className="text-lg">{item.title}</CardTitle>
-                <CardDescription>{item.description}</CardDescription>
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-
-        {/* Quick Info */}
-        <Card className="mt-6 shadow-[var(--shadow-card)]">
-          <CardHeader>
-            <CardTitle className="text-lg">Informasi Cepat</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="font-medium">{mitraData?.email}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Nomor Telepon</p>
-                <p className="font-medium">{mitraData?.phone_number}</p>
-              </div>
-              <div className="md:col-span-2">
-                <p className="text-sm text-muted-foreground">Alamat</p>
-                <p className="font-medium">{mitraData?.alamat}</p>
               </div>
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Promotional Banner */}
+      <div className="px-4 mb-6">
+        <Card className="bg-gradient-to-r from-orange-400 to-red-500 text-white overflow-hidden">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-lg">Selamat Datang!</h3>
+                <p className="text-sm opacity-90">{mitraData?.nama_toko}</p>
+                <p className="text-xs opacity-80 mt-1">Dashboard SmartCare Mitra</p>
+              </div>
+              <div className="text-right">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                  <Store className="w-8 h-8 text-white" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Menu Grid */}
+      <div className="px-4">
+        <div className="grid grid-cols-4 gap-4 mb-6">
+          {menuItems.slice(0, 4).map((item, index) => (
+            <div 
+              key={index}
+              className="bg-white rounded-2xl p-4 flex flex-col items-center cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+              onClick={() => item.path ? navigate(item.path) : item.action?.()}
+            >
+              <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.color} flex items-center justify-center mb-2`}>
+                <item.icon className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xs text-center font-medium text-gray-700 leading-tight">
+                {item.title.replace(' ', '\n')}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          {menuItems.slice(4).map((item, index) => (
+            <div 
+              key={index + 4}
+              className="bg-white rounded-2xl p-4 flex items-center cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+              onClick={() => item.path ? navigate(item.path) : item.action?.()}
+            >
+              <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.color} flex items-center justify-center mr-3`}>
+                <item.icon className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm text-gray-800">{item.title}</h3>
+                <p className="text-xs text-gray-500">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Service Marketplace */}
+      <div className="bg-white rounded-t-3xl px-4 py-6 mt-4">
+        <h2 className="font-bold text-lg text-gray-800 mb-2">Informasi Akun</h2>
+        <p className="text-sm text-gray-600 mb-4">Data lengkap mitra terdaftar</p>
+        
+        <div className="space-y-4">
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-gray-600">Email</span>
+            <span className="text-sm font-medium text-gray-800">{mitraData?.email}</span>
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-gray-600">Nomor Telepon</span>
+            <span className="text-sm font-medium text-gray-800">{mitraData?.phone_number}</span>
+          </div>
+          <div className="py-2">
+            <span className="text-sm text-gray-600">Alamat</span>
+            <p className="text-sm font-medium text-gray-800 mt-1">{mitraData?.alamat}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
