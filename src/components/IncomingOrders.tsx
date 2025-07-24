@@ -44,7 +44,12 @@ const IncomingOrders = () => {
       const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
       const mitraEmail = currentUser.email;
 
-      if (!mitraEmail) return;
+      if (!mitraEmail) {
+        console.log("No mitra email found");
+        return;
+      }
+
+      console.log("Loading incoming orders for:", mitraEmail);
 
       // Get orders that are pending and need mitra assignment
       const { data, error } = await supabase
@@ -66,9 +71,11 @@ const IncomingOrders = () => {
 
       if (error) {
         console.error("Error loading orders:", error);
+        console.error("Error details:", error);
         return;
       }
 
+      console.log("Orders loaded:", data);
       setOrders(data || []);
     } catch (error) {
       console.error("Error:", error);
