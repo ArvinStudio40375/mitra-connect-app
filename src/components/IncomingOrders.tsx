@@ -46,37 +46,62 @@ const IncomingOrders = () => {
 
       if (!mitraEmail) {
         console.log("No mitra email found");
+        setIsLoading(false);
         return;
       }
 
       console.log("Loading incoming orders for:", mitraEmail);
 
-      // Get orders that are pending and need mitra assignment
-      const { data, error } = await supabase
+      // Direct query without joins - get basic order data first
+      const { data: basicOrders, error: basicError } = await supabase
         .from("tagihan")
-        .select(`
-          *,
-          layanan:layanan_id (
-            nama_layanan,
-            description
-          ),
-          users:user_id (
-            nama,
-            email
-          )
-        `)
+        .select("*")
         .eq("status", "pending")
         .is("mitra_id", null)
         .order("order_date", { ascending: false });
 
-      if (error) {
-        console.error("Error loading orders:", error);
-        console.error("Error details:", error);
+      if (basicError) {
+        console.error("Error loading basic orders:", basicError);
+        setIsLoading(false);
         return;
       }
 
-      console.log("Orders loaded:", data);
-      setOrders(data || []);
+      if (!basicOrders || basicOrders.length === 0) {
+        console.log("No pending orders found");
+        setOrders([]);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log("Basic orders found:", basicOrders);
+
+      // Manually fetch related data for each order
+      const ordersWithRelations = await Promise.all(
+        basicOrders.map(async (order) => {
+          try {
+            const [layananRes, userRes] = await Promise.all([
+              supabase.from("layanan").select("nama_layanan, description").eq("id", order.layanan_id).maybeSingle(),
+              supabase.from("users").select("nama, email").eq("id", order.user_id).maybeSingle()
+            ]);
+
+            return {
+              ...order,
+              layanan: layananRes.data || { nama_layanan: "Layanan Tidak Diketahui", description: "" },
+              user: userRes.data || { nama: "User Tidak Diketahui", email: "" }
+            };
+          } catch (err) {
+            console.error("Error fetching related data for order:", order.id, err);
+            return {
+              ...order,
+              layanan: { nama_layanan: "Error Loading", description: "" },
+              user: { nama: "Error Loading", email: "" }
+            };
+          }
+        })
+      );
+
+      console.log("Orders with relations loaded:", ordersWithRelations);
+      setOrders(ordersWithRelations);
     } catch (error) {
       console.error("Error:", error);
     } finally {
