@@ -18,6 +18,9 @@ import {
   XCircle
 } from "lucide-react";
 
+// Import IncomingOrders component
+import IncomingOrders from "@/components/IncomingOrders";
+
 interface MitraData {
   nama_toko: string;
   email: string;
@@ -282,8 +285,16 @@ const DashboardMitra = () => {
         </div>
       </div>
 
-      {/* Service Marketplace */}
+      {/* Incoming Orders Section */}
       <div className="bg-white rounded-t-3xl px-4 py-6 mt-4">
+        <h2 className="font-bold text-lg text-gray-800 mb-2">Pesanan Masuk</h2>
+        <p className="text-sm text-gray-600 mb-4">Pesanan baru yang menunggu konfirmasi</p>
+        
+        <IncomingOrders />
+      </div>
+
+      {/* Account Information */}
+      <div className="bg-white px-4 py-6">
         <h2 className="font-bold text-lg text-gray-800 mb-2">Informasi Akun</h2>
         <p className="text-sm text-gray-600 mb-4">Data lengkap mitra terdaftar</p>
         
